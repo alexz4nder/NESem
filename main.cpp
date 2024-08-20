@@ -42,12 +42,10 @@ int main(int argc,char **argv) {
 
     apu->start_clocking();
 
-
     while(1){
         if (ppu->safe_to_render){
             SDL_RenderPresent(renderer);
             ppu->safe_to_render= false;
         }
     }
-    return 0;
 }
