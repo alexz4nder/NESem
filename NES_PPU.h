@@ -14,7 +14,7 @@ class NES_PPU {
     SDL_Renderer *renderer;
 
 public:
-    u_int8_t refresh_rate;
+    bool safe_to_render;
     u_int16_t scanline;
     u_int16_t dot;
     NES_CPU *cpu;

@@ -3,6 +3,7 @@
 #include "NES_CARTRIDGE.h"
 #include "NES_MEMORY.h"
 #include "NES_PPU.h"
+#include "NES_APU.h"
 #include <SDL2/SDL.h>
 #include <string.h>
 
@@ -17,7 +18,7 @@ int main(int argc,char **argv) {
     SDL_Renderer *renderer=NULL;
 
 
-    SDL_Init(SDL_INIT_VIDEO);
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
     SDL_CreateWindowAndRenderer(1024,960,0,&window,&renderer);
 
     SDL_RenderSetLogicalSize(renderer,256,240);
@@ -26,7 +27,6 @@ int main(int argc,char **argv) {
 
     memory->LoadCartridge(cart);
     NES_PPU *ppu=new NES_PPU(renderer,window);
-    ppu->refresh_rate=90;
 
     memory->ppu=ppu;
     memory->cpu=cpu;
@@ -38,12 +38,16 @@ int main(int argc,char **argv) {
     SDL_SetRenderDrawColor(renderer,255,255,255,255);
     SDL_RenderClear(renderer);
 
+    NES_APU *apu=new NES_APU(ppu,cpu);
+
+    apu->start_clocking();
+
 
     while(1){
-        cpu->exec();
-        ppu->exec();
-        ppu->exec();
-        ppu->exec();
+        if (ppu->safe_to_render){
+            SDL_RenderPresent(renderer);
+            ppu->safe_to_render= false;
+        }
     }
     return 0;
 }

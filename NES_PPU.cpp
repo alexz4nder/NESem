@@ -103,6 +103,9 @@ u_int8_t NES_PPU::read(u_int16_t adr) {
 }
 
 void NES_PPU::exec() {
+    while (safe_to_render){
+
+    }
     dot=(dot+1)%341;
     if(dot==0){
     base_nametable_x_internal=PPUCTRL.data.base_nametable_x;
@@ -138,8 +141,7 @@ void NES_PPU::exec() {
                     SDL_RenderDrawLine(renderer,0,i*16,256,i*16);
                 }
             }*/
-            SDL_RenderPresent(renderer);
-            SDL_Delay(1000/refresh_rate);
+            safe_to_render= true;
         }
         if (scanline==0){
             PPUSTATUS.data.vblank=0;

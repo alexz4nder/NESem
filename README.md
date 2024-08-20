@@ -1,3 +1,3 @@
 # NESem
 
-NES emulator project i do in free time.
+NES emulator project which I do in free time.
