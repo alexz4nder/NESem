@@ -5,13 +5,14 @@
 #ifndef NESEMU_NES_MEMORY_H
 #define NESEMU_NES_MEMORY_H
 #include "NES_PPU.h"
+class NES_APU;
 class NES_CPU;
 class NES_MEMORY {
 public:
     char RAM[0x800];
     NES_PPU *ppu;
     NES_CPU *cpu;
-
+    NES_APU *apu;
 
     NES_CARTRIDGE *Cartridge;
 

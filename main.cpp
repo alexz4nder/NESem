@@ -39,7 +39,7 @@ int main(int argc,char **argv) {
     SDL_RenderClear(renderer);
 
     NES_APU *apu=new NES_APU(ppu,cpu);
-
+    memory->apu=apu;
     apu->start_clocking();
 
     while(1){

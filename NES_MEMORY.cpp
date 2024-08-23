@@ -4,8 +4,8 @@
 
 #include "NES_MEMORY.h"
 #include <cstdlib>
-#include <fstream>
 #include "NES_CPU.h"
+#include "NES_APU.h"
 
 NES_MEMORY::NES_MEMORY() {
 
@@ -169,6 +169,72 @@ void NES_MEMORY::write(char X,unsigned short adr) {
     }
     else if (adr<0x4020){
         switch (adr) {
+            //P1
+            case 0x4000:
+                apu->p1_reg1.reg=X;
+                //printf("0x4000 %hd\n",apu->p1_reg1.data.V);
+                break;
+            case 0x4001:
+
+                break;
+            case 0x4002:
+                apu->p1_timer_value=(apu->p1_timer_value & 0x0700) | (((u_int16_t)X) & 0x00FF);
+                break;
+            case 0x4003:
+                apu->p1_timer_value=(apu->p1_timer_value & 0x00FF) | ((((u_int16_t)X)<<8) & 0x0700);
+                apu->p1_lenght_counter = apu->lenght_counter_table[(X >> 3) & 0x1F];
+
+                //printf("0x4003 %hd -timer_value %hx\n",apu->p1_lenght_counter,apu->p1_timer_value);
+                break;
+            //P2
+            case 0x4004:
+                apu->p2_reg1.reg=X;
+                break;
+            case 0x4005:
+
+                break;
+            case 0x4006:
+                apu->p2_timer_value=(apu->p2_timer_value & 0x0700) | (((u_int16_t)X) & 0x00FF);
+                break;
+            case 0x4007:
+                apu->p2_timer_value=(apu->p2_timer_value & 0x00FF) | ((((u_int16_t)X)<<8) & 0x0700);
+                apu->p2_lenght_counter = apu->lenght_counter_table[(X >> 3) & 0x1F];
+
+                //printf("0x4003 %hd -timer_value %hx\n",apu->p1_lenght_counter,apu->p1_timer_value);
+                break;
+            //TRIANGLE
+            case 0x4008:
+                apu->triangle_C=X&0b10000000;
+                apu->triangle_linear_counter_reload_value=X & 0b01111111;
+                break;
+            case 0x400A:
+                apu->triangle_timer_value=(apu->triangle_timer_value & 0x0700) | (((u_int16_t)X) & 0x00FF);
+                break;
+            case 0x400B:
+                apu->reload_flag=1;
+                apu->triangle_timer_value=(apu->triangle_timer_value & 0x00FF) | ((((u_int16_t)X)<<8) & 0x0700);
+                apu->triangle_lenght_counter=apu->lenght_counter_table[(X >> 3 ) & 0x1F];
+                break;
+            //NOISE
+            case 0x400C:
+                apu->noise_reg.reg=X;
+
+                break;
+            case 0x400D:
+
+                break;
+            case 0x400E:
+                apu->noise_timer_value=apu->noise_sequencer_timer_table[X & 0xF];
+                apu->noise_mode_flag= X & 0b10000000;
+                break;
+            case 0x400F:
+                apu->noise_lenght=apu->lenght_counter_table[(X >> 3 ) & 0x1F];
+                //printf("%hd\n",apu->noise_lenght);
+                break;
+            case 0x4015:
+                apu->status_reg.reg=X;
+                //printf("0x4015 %hx\n",X);
+                break;
             case 0x4016:
                 capture_controller_state();
                 break;
@@ -180,6 +246,14 @@ void NES_MEMORY::write(char X,unsigned short adr) {
                     ppu->OAM[i].memory= read(X*0x100+i);
                 }
                 return;
+                break;
+            case 0x4017:
+                if (X & 0b10000000){
+                    apu->frame_counter_mode=1;
+                } else
+                {
+                    apu->frame_counter_mode=0;
+                }
                 break;
 
         }
