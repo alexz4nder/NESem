@@ -106,7 +106,9 @@ void NES_PPU::exec() {
     while (safe_to_render){
 
     }
+
     dot=(dot+1)%341;
+
     if(dot==0){
     base_nametable_x_internal=PPUCTRL.data.base_nametable_x;
     scrol_x_internal=scrol_x;
@@ -132,7 +134,7 @@ void NES_PPU::exec() {
                 //printf("NMI %hx\n",cpu->PC);
                 cpu->NMI();
             }
-            /*if (1){
+           /* if (1){
                 SDL_SetRenderDrawColor(renderer,255,0,0,255);
                 for (int i = 0; i < 16; ++i) {
                     SDL_RenderDrawLine(renderer,i*16,0,i*16,240);
@@ -159,6 +161,7 @@ void NES_PPU::exec() {
     }
 //RENDERING PIXEL
     if (scanline>=0 && scanline<240 && dot<256){
+
         u_int16_t x_cord=dot+(scrol_x_internal & 0x00FF);
         if (base_nametable_x_internal){
             x_cord+=256;
@@ -200,17 +203,19 @@ void NES_PPU::exec() {
         u_int8_t row_high= read(sprite_adress+ (scrol_y_internal+scanline)%8);
         u_int8_t row_low= read(sprite_adress+ (scrol_y_internal+scanline)%8 + 8);
 
-        //row_high= 0xFF;
-        //row_low= 0x00;
+        //row_high= 0x00;
+        //row_low= 0xFF;
 
 
         u_int16_t attribute_adress=0x2000+0x3C0+page*0x400+(x_block%32)/4+((y_block%30)/4)*8;
         u_int8_t background_attribute= read(attribute_adress);
 
-        if ((y_block/2) % 2){
+
+
+        if (((y_block%30)/2) % 2){
             background_attribute>>=4;
         }
-        if ((x_block/2) % 2){
+        if (((x_block%32)/2) % 2){
             background_attribute>>=2;
         }
 
@@ -339,5 +344,73 @@ void NES_PPU::exec() {
 
 
 
+
+}
+
+
+void NES_PPU::dump_nametable(char *file_name) {
+    FILE *f= fopen(file_name,"w");
+
+    for (int i = 0; i < 32; ++i) {
+        for (int j = 0; j < 32; ++j) {
+            fprintf(f,"%2hx ", read(0x2000+i*32+j));
+        }
+        fprintf(f,"| ");
+        for (int j = 0; j < 32; ++j) {
+            fprintf(f,"%2hx ", read(0x2400+i*32+j));
+        }
+        fprintf(f,"\n");
+    }
+
+    for (int i = 0; i < 64; ++i) {
+        fprintf(f,"===");
+    }
+    fprintf(f,"\n");
+
+    for (int i = 0; i < 32; ++i) {
+        for (int j = 0; j < 32; ++j) {
+            fprintf(f,"%2hx ", read(0x2800+i*32+j));
+        }
+        fprintf(f,"| ");
+        for (int j = 0; j < 32; ++j) {
+            fprintf(f,"%2hx ", read(0x2C00+i*32+j));
+        }
+        fprintf(f,"\n");
+    }
+
+    fclose(f);
+}
+
+void NES_PPU::dump_attribute_table(char *file) {
+    FILE *f= fopen(file,"w");
+    for (int i = 0; i < 8; ++i) {
+        for (int j = 0; j < 8; ++j) {
+            fprintf(f,"%2hhx ", read(0x23C0+j+i*8));
+        }
+        fprintf(f,"|");
+        for (int j = 0; j < 8; ++j) {
+            fprintf(f,"%2hhx ", read(0x27C0+j+i*8));
+        }
+        fprintf(f,"\n");
+    }
+
+    for (int i = 0; i < 16; ++i) {
+        fprintf(f,"===");
+    }
+
+    fprintf(f,"\n");
+
+    for (int i = 0; i < 8; ++i) {
+        for (int j = 0; j < 8; ++j) {
+            fprintf(f,"%2hhx ", read(0x2BC0+j+i*8));
+        }
+        fprintf(f,"|");
+        for (int j = 0; j < 8; ++j) {
+            fprintf(f,"%2hhx ", read(0x2FC0+j+i*8));
+        }
+        fprintf(f,"\n");
+    }
+
+    fclose(f);
 
 }

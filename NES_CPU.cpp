@@ -36,6 +36,7 @@ void NES_CPU::NMI() {
     if (debug){
         printf("NMI\n");
     }
+    printf("NMI\n");
 
         PC = new_PC;
     instruction_started=0;
@@ -620,7 +621,7 @@ void NES_CPU::PLA() {
     PC += 1;
 
     PS.data.Z = A == 0;
-    PS.data.N = (A & 0b1000000) != 0;
+    PS.data.N = (A & 0b10000000) != 0;
 
     if (debug) {
         printf("PLA");

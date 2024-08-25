@@ -31,6 +31,9 @@ public:
     //WRITE
     void write(char X,unsigned short int adr);
 
+
+    void dump_ram(char *file_name);
+
 };
 
 

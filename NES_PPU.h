@@ -20,7 +20,7 @@ public:
     NES_CPU *cpu;
 
     NES_CARTRIDGE *cartridge;
-    u_int8_t VRAM[0x1000];
+    u_int8_t VRAM[0x800];
     union OAM_memory{
         u_int8_t memory;
         struct OAM_atribbutes{
@@ -91,7 +91,8 @@ public:
     void LoadCartridge(NES_CARTRIDGE *cart);
     void exec();
     u_int8_t pallets[0x20];
-
+    void dump_nametable(char *file_name);
+    void dump_attribute_table(char *file);
     u_int8_t read(u_int16_t adr);
 
 

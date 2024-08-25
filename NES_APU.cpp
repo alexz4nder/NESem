@@ -26,7 +26,6 @@ void apu_callback(void *usr_dat,Uint8 *stream,int len){
         apu->exec();
     }
 
-
 }
 
 NES_APU::NES_APU(NES_PPU *nes_ppu, NES_CPU *nes_cpu) {

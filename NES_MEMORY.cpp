@@ -15,6 +15,11 @@ void NES_MEMORY::LoadCartridge(NES_CARTRIDGE *new_cartridge) {
     Cartridge=new_cartridge;
 }
 
+void NES_MEMORY::dump_ram(char *file_name) {
+
+
+}
+
 void NES_MEMORY::capture_controller_state() {
     const Uint8 *keyboard= SDL_GetKeyboardState(NULL);
     SDL_PumpEvents();
@@ -157,10 +162,12 @@ void NES_MEMORY::write(char X,unsigned short adr) {
 
                 }
 
+                printf("ppu_adr:%hx ppu_data:%hhx\n",ppu->adr,X);
+
                 if (ppu->PPUCTRL.data.adr_increment){
-                    ppu->adr+=32;
+                    ppu->adr=ppu->adr+32;
                 } else{
-                    ppu->adr+=1;
+                    ppu->adr=ppu->adr+1;
                 }
 
                 break;
@@ -258,6 +265,6 @@ void NES_MEMORY::write(char X,unsigned short adr) {
 
         }
     } else{
-
+    Cartridge->write(X,adr);
     }
 }
